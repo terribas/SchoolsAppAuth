@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/schoolListFragment">
+
+    <fragment
+        android:id="@+id/schoolListFragment"
+        android:name="com.example.schoolsapp.view.fragment.SchoolListFragment"
+        android:label="fragment_school_list"
+        tools:layout="@layout/fragment_school_list" >
+        <action
+            android:id="@+id/action_schoolListFragment_to_addSchoolFragment"
+            app:destination="@id/addSchoolFragment" />
+        <action
+            android:id="@+id/action_schoolListFragment_to_editSchoolFragment"
+            app:destination="@id/editSchoolFragment" />
+        <action
+            android:id="@+id/action_schoolListFragment_to_teacherListFragment"
+            app:destination="@id/teacherListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addSchoolFragment"
+        android:name="com.example.schoolsapp.view.fragment.AddSchoolFragment"
+        android:label="fragment_add_school"
+        tools:layout="@layout/fragment_add_school" />
+    <fragment
+        android:id="@+id/editSchoolFragment"
+        android:name="com.example.schoolsapp.view.fragment.EditSchoolFragment"
+        android:label="fragment_edit_school"
+        tools:layout="@layout/fragment_edit_school" />
+    <fragment
+        android:id="@+id/teacherListFragment"
+        android:name="com.example.schoolsapp.view.fragment.TeacherListFragment"
+        android:label="fragment_teacher_list"
+        tools:layout="@layout/fragment_teacher_list" >
+        <action
+            android:id="@+id/action_teacherListFragment_to_addTeacherFragment"
+            app:destination="@id/addTeacherFragment" />
+        <action
+            android:id="@+id/action_teacherListFragment_to_editTeacherFragment"
+            app:destination="@id/editTeacherFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editTeacherFragment"
+        android:name="com.example.schoolsapp.view.fragment.EditTeacherFragment"
+        android:label="fragment_edit_teacher"
+        tools:layout="@layout/fragment_edit_teacher" />
+    <fragment
+        android:id="@+id/addTeacherFragment"
+        android:name="com.example.schoolsapp.view.fragment.AddTeacherFragment"
+        android:label="fragment_add_teacher"
+        tools:layout="@layout/fragment_add_teacher" />
+</navigation>
