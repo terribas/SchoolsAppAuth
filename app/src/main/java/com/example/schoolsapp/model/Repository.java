@@ -12,17 +12,25 @@ import android.util.Log;
 import com.example.schoolsapp.rest.callback.OnDBResponse;
 import com.example.schoolsapp.rest.callback.OnSchoolsResponse;
 import com.example.schoolsapp.rest.callback.OnTeachersResponse;
+import com.example.schoolsapp.rest.callback.OnUserCallback;
 import com.example.schoolsapp.rest.client.SchoolClient;
 import com.example.schoolsapp.rest.client.TeacherClient;
+import com.example.schoolsapp.rest.client.UserClient;
 import com.example.schoolsapp.rest.pojo.DBResponse;
+import com.example.schoolsapp.rest.pojo.LoginRegister;
 import com.example.schoolsapp.rest.pojo.School;
 import com.example.schoolsapp.rest.pojo.Teacher;
+import com.example.schoolsapp.rest.pojo.User;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,31 +43,63 @@ public class Repository {
     private Context context;
 
     private Retrofit retrofit;
-    private final static String REST_URL="https://informatica.ieszaidinvergeles.org:9039/PSP/colegiosApp/public/api/";
+    private final static String REST_URL="https://informatica.ieszaidinvergeles.org:9039/PSP/SchoolsAppB-API/public/api/";
+
+    private String authToken = "";
+
+
     private SchoolClient schoolClient;
     private TeacherClient teacherClient;
+    private UserClient userClient;
 
     public final static String[] STORAGE_PERMISSION = { Manifest.permission.READ_EXTERNAL_STORAGE };
     public final static int STORAGE_PERMISSION_CODE = 1;
+
+
 
     //NO HAY MutableLiveData s !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
     private School currentSchool;
     private Teacher currentTeacher;
-
+    private User currentUser;
 
 
 
     public Repository(Context context){
         this.context = context;
+
+
+        OkHttpClient client = new OkHttpClient().newBuilder().addInterceptor(new Interceptor() {
+            @Override
+            public okhttp3.Response intercept(Chain chain) throws IOException {
+                Request request = chain.request().newBuilder()
+                        .addHeader("Authorization", "Bearer " + authToken)
+                        .build();
+                return chain.proceed(request);
+            }
+        }).build();
+
+        /* Lo que he entendido que hace este OkHttpClient, es añadir la cabecera que se ha especificado
+         * a todas las solicitudes que se hagan al servidor.
+         * En caso de la API con la que se conecta, acepta Bearer Authentication, que tiene el formato de
+         * Authentication: Bearer h4h34u5ijth43534wdflksdjfgkljfdskljgsdlkjgdfljk
+         */
+
+
+
+
         retrofit = new Retrofit.Builder()
+                .client(client)
                 .baseUrl(REST_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+
         schoolClient = retrofit.create(SchoolClient.class);
         teacherClient = retrofit.create(TeacherClient.class);
+        userClient = retrofit.create(UserClient.class);
+
     }
 
 
@@ -77,6 +117,62 @@ public class Repository {
 
     public void setCurrentTeacher(Teacher currentTeacher) {
         this.currentTeacher = currentTeacher;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public User getCurrentUser(User currentUser) { return currentUser; }
+
+
+
+
+
+    public void login(LoginRegister login, OnUserCallback observer){
+        Call<User> request = userClient.login(login);
+
+        request.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if(response.body() == null || response.body().getToken() == null){
+                    observer.onLoginRegisterFailure();
+                }else{
+                    authToken = response.body().getToken();
+                    currentUser = response.body();
+                    observer.OnLoginRegisterSuccess(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                observer.onLoginRegisterFailure();
+            }
+        });
+    }
+
+
+    public void register(LoginRegister register, OnUserCallback observer){
+        Call<User> request = userClient.register(register);
+
+        request.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if(response.body() == null || response.body().getToken() == null){
+                    observer.onLoginRegisterFailure();
+                }else{
+                    //Puedo dejar iniciada su sesión cogiendo el token, pero prefiero que introduzca
+                    //de nuevo sus credenciales
+                    observer.OnLoginRegisterSuccess(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                observer.onLoginRegisterFailure();
+            }
+        });
+
     }
 
 
@@ -100,6 +196,7 @@ public class Repository {
     /* ---------- SCHOOLS ---------- */
 
     public void loadAllSchools(OnSchoolsResponse observer){
+        Log.v("xyzyx", "EL AUTHTOKEN ES "+authToken);
         Call<ArrayList<School>> request = schoolClient.getAllSchools();
 
         request.enqueue(new Callback<ArrayList<School>>() {

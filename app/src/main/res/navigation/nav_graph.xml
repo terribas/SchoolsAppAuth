@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/schoolListFragment">
+    app:startDestination="@id/loginFragment">
 
     <fragment
         android:id="@+id/schoolListFragment"
@@ -52,4 +52,21 @@
         android:name="com.example.schoolsapp.view.fragment.AddTeacherFragment"
         android:label="fragment_add_teacher"
         tools:layout="@layout/fragment_add_teacher" />
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.schoolsapp.view.fragment.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_schoolListFragment"
+            app:destination="@id/schoolListFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.schoolsapp.view.fragment.RegisterFragment"
+        android:label="fragment_register"
+        tools:layout="@layout/fragment_register" />
 </navigation>

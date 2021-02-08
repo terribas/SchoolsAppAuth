@@ -10,6 +10,8 @@ import com.example.schoolsapp.model.Repository;
 import com.example.schoolsapp.rest.callback.OnDBResponse;
 import com.example.schoolsapp.rest.callback.OnSchoolsResponse;
 import com.example.schoolsapp.rest.callback.OnTeachersResponse;
+import com.example.schoolsapp.rest.callback.OnUserCallback;
+import com.example.schoolsapp.rest.pojo.LoginRegister;
 import com.example.schoolsapp.rest.pojo.School;
 import com.example.schoolsapp.rest.pojo.Teacher;
 
@@ -79,4 +81,11 @@ public class ViewModelActivity extends AndroidViewModel {
     }
 
 
+    public void login(LoginRegister loginRegister, OnUserCallback observer) {
+        repository.login(loginRegister, observer);
+    }
+
+    public void register(LoginRegister register, OnUserCallback observer) {
+        repository.register(register, observer);
+    }
 }
